@@ -4,5 +4,5 @@ __author__ = """Jacob C Reinhold"""
 __email__ = 'jcreinhold@gmail.com'
 __version__ = '0.1.0'
 
-from data import *
-from plot import *
+from nimanifold.data import *
+from nimanifold.plot import *
