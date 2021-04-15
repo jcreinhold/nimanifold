@@ -142,5 +142,5 @@ def _random_data_locs_slices(img: Array, grid: Grid, **kwargs) -> DataLocSlice:
     patches, idxs = random_patches(img, **kwargs)
     samples = [p.flatten() for p in patches]
     locs = random_locs(grid, idxs)
-    slices = [middle_slices(p) for p in patches]
+    slices = middle_slices(patches)
     return samples, locs, slices

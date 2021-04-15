@@ -60,5 +60,5 @@ def _step_data_locs_slices(img: Array, grid: Grid, **kwargs) -> DataLocSlice:
     patches, idxs = step_patches(img, **kwargs)
     samples = [p.flatten() for p in patches]
     locs = step_locs(grid, idxs)
-    slices = [middle_slices(p) for p in patches]
+    slices = middle_slices(patches)
     return samples, locs, slices
