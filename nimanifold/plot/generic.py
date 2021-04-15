@@ -34,7 +34,7 @@ def plot(data: Array,
          colors: Optional[Array] = None,
          ax: Axes = None,
          title: str = None,
-         slices: List[Array] = None) -> None:
+         slices: Array = None) -> None:
     if ax is None:
         _, ax = plt.subplots(1, 1, figsize=(8, 8))
     ax.scatter(data[:, 0], data[:, 1], c=colors, s=3.)
@@ -46,15 +46,15 @@ def plot(data: Array,
         if hasattr(offsetbox, 'AnnotationBbox'):
             # only print thumbnails with matplotlib > 1.0
             shown_images = np.array([[1., 1.]])  # just something big
-            for i in range(X.shape[0]):
-                dist = np.sum((X[i] - shown_images) ** 2, 1)
+            for i in range(slices.shape[0]):
+                dist = np.sum((slices[i] - shown_images) ** 2, 1)
                 if np.min(dist) < 4e-3:
                     # don't show points that are too close
                     continue
-                shown_images = np.r_[shown_images, [X[i]]]
+                shown_images = np.r_[shown_images, [slices[i]]]
                 imagebox = offsetbox.AnnotationBbox(
-                    offsetbox.OffsetImage(digits.images[i], cmap=plt.cm.gray_r),
-                    X[i])
+                    offsetbox.OffsetImage(slices[i], cmap=plt.cm.gray_r),
+                    slices[i])
                 ax.add_artist(imagebox)
     if title is not None:
         plt.title(title)

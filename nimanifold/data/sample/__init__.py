@@ -1,1 +1,1 @@
-from sample import *
+from nimanifold.data.sample import *
