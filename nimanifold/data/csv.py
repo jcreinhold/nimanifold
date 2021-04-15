@@ -34,7 +34,7 @@ def iacl_csv(dataset: str, subtype: Optional[str] = None, site: Optional[str] = 
         if subtype is not None:
             csv = csv.query(f"type == '{subtype}'")
     elif dataset == 'ixi':
-        csv = pd.read_csv()
+        csv = pd.read_csv(IXI_CSV)
         if subtype is not None:
             csv = csv.query(f"contrast == '{subtype}'")
         if site is not None:
