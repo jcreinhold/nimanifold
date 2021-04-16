@@ -77,8 +77,22 @@ class Sample:
             assert (self.contrasts.shape[0] == N)
             assert (self.contrasts.shape[1] == 3)
 
-    def new_data(self, data):
+    def new_data(self, data: Array):
         sample = copy(self)
         sample.data = data
         sample.is_valid()
+        return sample
+
+    def subsample(self, n: int):
+        N = len(self)
+        assert (n <= N)
+        idxs = np.random.choice(N, size=n, replace=False)
+        sample = Sample(
+            self.data[idxs],
+            self.locs[idxs],
+            self.pids[idxs],
+            self.slices[idxs],
+            self.sites[idxs] if self.sites is not None else None,
+            self.contrasts[idxs] if self.contrasts is not None else None,
+        )
         return sample
