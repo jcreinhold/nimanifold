@@ -11,7 +11,8 @@ Created on: Apr. 15, 2021
 """
 
 __all__ = [
-    'plot'
+    'plot',
+    'scatter_imgs'
 ]
 
 from typing import *
@@ -43,18 +44,22 @@ def plot(data: Array,
     ax.xaxis.set_tick_params(**TICK_PARAMS)
     ax.yaxis.set_tick_params(**TICK_PARAMS)
     if slices is not None:
-        if hasattr(offsetbox, 'AnnotationBbox'):
-            # only print thumbnails with matplotlib > 1.0
-            shown_images = np.array([[1., 1.]])  # just something big
-            for i in range(slices.shape[0]):
-                dist = np.sum((slices[i] - shown_images) ** 2, 1)
-                if np.min(dist) < 4e-3:
-                    # don't show points that are too close
-                    continue
-                shown_images = np.r_[shown_images, [slices[i]]]
-                imagebox = offsetbox.AnnotationBbox(
-                    offsetbox.OffsetImage(slices[i], cmap=plt.cm.gray_r),
-                    slices[i])
-                ax.add_artist(imagebox)
+        scatter_imgs(data, slices, ax)
     if title is not None:
         plt.title(title)
+
+
+def scatter_imgs(data: Array, slices: Array, ax: Axes):
+    if hasattr(offsetbox, 'AnnotationBbox'):
+        # only print thumbnails with matplotlib > 1.0
+        shown_images = np.array([[1., 1.]])  # just something big
+        for i in range(data.shape[0]):
+            dist = np.sum((data[i] - shown_images) ** 2, 1)
+            if np.min(dist) < 4e-3:
+                # don't show points that are too close
+                continue
+            shown_images = np.r_[shown_images, [data[i]]]
+            imagebox = offsetbox.AnnotationBbox(
+                offsetbox.OffsetImage(slices[i], cmap=plt.cm.gray_r),
+                data[i])
+            ax.add_artist(imagebox)
