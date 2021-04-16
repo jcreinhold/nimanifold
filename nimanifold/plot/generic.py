@@ -31,20 +31,25 @@ TICK_PARAMS = dict(
 )
 
 
-def plot(data: Array,
-         colors: Optional[Array] = None,
+def _get_color(samples: Sample, name: str):
+    return getattr(samples, name)
+
+
+def plot(samples: Sample,
+         colors: Optional[str] = None,
          ax: Axes = None,
-         title: str = None,
-         slices: Array = None) -> None:
+         title: str = None) -> None:
+    if colors is not None:
+        colors = _get_color(samples, colors)
     if ax is None:
         _, ax = plt.subplots(1, 1, figsize=(8, 8))
-    ax.scatter(data[:, 0], data[:, 1], c=colors, s=3.)
+    ax.scatter(samples.data[:, 0], samples.data[:, 1], c=colors, s=3.)
     ax.set_facecolor("black")
     ax.axis('scaled')
     ax.xaxis.set_tick_params(**TICK_PARAMS)
     ax.yaxis.set_tick_params(**TICK_PARAMS)
-    if slices is not None:
-        scatter_imgs(data, slices, ax)
+    if samples.slices is not None:
+        scatter_imgs(samples.data, samples.slices, ax)
     if title is not None:
         plt.title(title)
 

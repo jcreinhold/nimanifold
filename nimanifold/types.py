@@ -18,12 +18,14 @@ __all__ = [
     'Grid',
     'Loc',
     'Number',
-    'Samples',
+    'Sample',
     'Shape',
     'SubGrid'
 ]
 
 from typing import *
+
+from copy import copy
 
 from matplotlib.axes import Axes
 import numpy as np
@@ -35,6 +37,48 @@ DataLocSlice = Tuple[List[Array], List[Array], List[Array]]
 Grid = Tuple[Array, Array, Array]
 Loc = Tuple[int, int, int]
 Number = Union[int, float]
-Samples = Tuple[Array, Array, Array, Array, Array, Array]
 Shape = Tuple[int, int, int]
 SubGrid = Tuple[Array, Array, Array]
+
+
+class Sample:
+    def __init__(self,
+                 data: Array,
+                 locs: Array,
+                 pids: Array,
+                 slices: Array,
+                 sites: Optional[Array] = None,
+                 contrasts: Optional[Array] = None):
+        self.data = data
+        self.locs = locs
+        self.pids = pids
+        self.slices = slices
+        self.sites = sites
+        self.contrasts = contrasts
+        self.is_valid()
+
+    def __len__(self):
+        return self.data[0]
+
+    def __repr__(self):
+        return f"{len(self)} Samples"
+
+    def is_valid(self):
+        N = len(self)
+        assert (self.locs.shape[0] == N)
+        assert (self.locs.shape[1] == 3)
+        assert (self.pids.shape[0] == N)
+        assert (self.pids.shape[1] == 3)
+        assert (self.slices.shape[0] == N)
+        if self.sites is not None:
+            assert (self.sites.shape[0] == N)
+            assert (self.sites.shape[1] == 3)
+        if self.contrasts is not None:
+            assert (self.contrasts.shape[0] == N)
+            assert (self.contrasts.shape[1] == 3)
+
+    def new_data(self, data):
+        sample = copy(self)
+        sample.data = data
+        sample.is_valid()
+        return sample

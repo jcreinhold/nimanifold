@@ -17,6 +17,7 @@ __all__ = [
 
 from typing import *
 
+from dataclasses import dataclass
 from functools import partial
 
 import nibabel as nib
@@ -45,10 +46,12 @@ def get_samples(csv: DataFrame,
                 n_samples: Optional[int] = None,
                 threshold: Optional[float] = None,
                 to_sphere: bool = False,
-                random: bool = False) -> Samples:
+                random: bool = False) -> Sample:
     patient_id_map = get_patient_id_map(csv)
     site_map = get_site_map(csv)
     contrast_map = get_contrast_map(csv)
+    has_site = site_map is not None
+    has_contrast = contrast_map is not None
     grid_creator = create_grid if random else \
         partial(create_step_grid, window=window, step=step)
     if step is None:
@@ -77,10 +80,10 @@ def get_samples(csv: DataFrame,
         locs.append(np.asarray(locs_))
         slices.append(np.asarray(slices_))
         pids.append(np.asarray([patient_id_map[pid]] * N))
-        if site_map is not None:
+        if has_site:
             site = row.site
             sites.append(np.asarray([site_map[site]] * N))
-        if contrast_map is not None:
+        if has_contrast:
             contrast = row.contrast
             contrasts.append(np.asarray([contrast_map[contrast]] * N))
     data = np.vstack(data)
@@ -89,12 +92,11 @@ def get_samples(csv: DataFrame,
     locs = (locs - locs.min()) / (locs.max() - locs.min())
     pids = np.concatenate(pids)[idxs]
     pids = _get_cmap(pids, 'gist_ncar')
-    if site_map is not None:
-        sites = _get_cmap(np.concatenate(sites)[idxs])
-    if contrast_map is not None:
-        contrasts = _get_cmap(np.concatenate(contrasts)[idxs])
+    sites = _get_cmap(np.concatenate(sites)[idxs]) if has_site else None
+    contrasts = _get_cmap(np.concatenate(contrasts)[idxs]) if has_contrast else None
     if to_sphere:
         data = project_dataset_to_sphere(data)
     else:
         data = preprocessing.scale(data)
-    return data, locs, pids, slices, sites, contrasts
+    samples = Sample(data, locs, pids, slices, sites, contrasts)
+    return samples
