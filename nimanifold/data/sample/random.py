@@ -99,7 +99,7 @@ class RandomCrop3D(CropBase):
                  axis: int = 0):
         super().__init__(3, output_size, n_samples, threshold, pct, axis)
 
-    def __call__(self, img: Array, n_samples: int = 1) -> Tuple[List[Array], List[Index]]:
+    def __call__(self, img: Array) -> Tuple[List[Array], List[Index]]:
         *cs, h, w, d = img.shape
         hh, ww, dd = self.output_size
         (hml, wml, dml), (hmh, wmh, dmh) = self._offset_by_pct(h, w, d)
@@ -107,7 +107,7 @@ class RandomCrop3D(CropBase):
         min_idxs = (hml + hh // 2, wml + ww // 2, dml + dd // 2)
         x = img[0] if len(cs) > 0 else img  # use the first image to determine sampling, if multimodal
         samples, idxs = [], []
-        for _ in range(n_samples):
+        for _ in range(self.n_samples):
             s_idxs = self._get_sample_idxs(x)
             i, j, k = [i if min_i <= i <= max_i else max_i if i > max_i else min_i
                        for max_i, min_i, i in zip(max_idxs, min_idxs, s_idxs)]
