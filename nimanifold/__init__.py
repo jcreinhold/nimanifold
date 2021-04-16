@@ -6,3 +6,4 @@ __version__ = '0.1.0'
 
 from nimanifold.data import *
 from nimanifold.plot import *
+from nimanifold.types import Sample
