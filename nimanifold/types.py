@@ -58,7 +58,7 @@ class Sample:
         self.is_valid()
 
     def __len__(self):
-        return self.data[0]
+        return self.data.shape[0]
 
     def __repr__(self):
         return f"{len(self)} Samples"
