@@ -40,8 +40,8 @@ def plot(data: Array,
     ax.scatter(data[:, 0], data[:, 1], c=colors, s=3.)
     ax.set_facecolor("black")
     ax.axis('scaled')
-    ax.xaxis.set_TICK_PARAMS(**TICK_PARAMS)
-    ax.yaxis.set_TICK_PARAMS(**TICK_PARAMS)
+    ax.xaxis.set_tick_params(**TICK_PARAMS)
+    ax.yaxis.set_tick_params(**TICK_PARAMS)
     if slices is not None:
         if hasattr(offsetbox, 'AnnotationBbox'):
             # only print thumbnails with matplotlib > 1.0
