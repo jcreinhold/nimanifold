@@ -69,7 +69,7 @@ def get_samples(csv: DataFrame,
     grids = {}
     rows = enumerate(csv.iterrows())
     if progress:
-        rows = tqdm(rows)
+        rows = tqdm(rows, total=csv.shape[0])
     for i, (_, row) in rows:
         fn = row.filename
         pid = row.id
