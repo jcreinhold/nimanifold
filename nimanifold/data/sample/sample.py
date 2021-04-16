@@ -90,6 +90,7 @@ def get_samples(csv: DataFrame,
     data, idxs = np.unique(data, axis=0, return_index=True)
     locs = np.vstack(locs)[idxs]
     locs = (locs - locs.min()) / (locs.max() - locs.min())
+    slices = np.vstack(slices)[idxs]
     pids = np.concatenate(pids)[idxs]
     pids = _get_cmap(pids, 'gist_ncar')
     sites = _get_cmap(np.concatenate(sites)[idxs]) if has_site else None
