@@ -17,6 +17,8 @@ __all__ = [
 
 from typing import *
 
+from functools import partial
+
 import nibabel as nib
 import numpy as np
 from sklearn import preprocessing
@@ -47,8 +49,8 @@ def get_samples(csv: DataFrame,
     patient_id_map = get_patient_id_map(csv)
     site_map = get_site_map(csv)
     contrast_map = get_contrast_map(csv)
-    data, locs, pids, slices, sites, contrasts = [], [], [], [], [], []
-    grids = {}
+    grid_creator = create_grid if random else \
+        partial(create_step_grid, window=window, step=step)
     if step is None:
         step = window
     if threshold is None:
@@ -57,27 +59,23 @@ def get_samples(csv: DataFrame,
                          step=step,
                          threshold=threshold,
                          window=window)
+    sampler = partial(_random_data_locs_slices, **sample_kwargs) if random else \
+        partial(_step_data_locs_slices, **sample_kwargs)
+    data, locs, pids, slices, sites, contrasts = [], [], [], [], [], []
+    grids = {}
     for i, (_, row) in enumerate(csv.iterrows()):
         fn = row.filename
         pid = row.id
         img = nib.load(fn).get_fdata()
         shape = img.shape
         if shape not in grids:
-            if random:
-                grid = create_grid(shape)
-            else:
-                grid = create_step_grid(shape, window, step)
+            grid = grid_creator(shape)
             grids = {shape: grid}
-        if random:
-            samples, locs, slices = _random_data_locs_slices(img, grids[shape],
-                                                             **sample_kwargs)
-        else:
-            samples, locs, slices = _step_data_locs_slices(img, grids[shape],
-                                                           **sample_kwargs)
-        N = len(samples)
-        data.append(np.asarray(samples))
-        locs.append(np.asarray(locs))
-        slices.append(np.asarray(slices))
+        data_, locs_, slices_ = sampler(img, grids[shape])
+        N = len(data_)
+        data.append(np.asarray(data_))
+        locs.append(np.asarray(locs_))
+        slices.append(np.asarray(slices_))
         pids.append(np.asarray([patient_id_map[pid]] * N))
         if site_map is not None:
             site = row.site

@@ -48,7 +48,7 @@ def middle_slices(patches: List[Array], axis: int = 2, n_rot: int = 3) -> List[A
 
 
 def middle(x: Array) -> Number:
-    idx = np.asarray(x.shape) // 2
+    idx = tuple(np.asarray(x.shape) // 2)
     return x[idx]
 
 
