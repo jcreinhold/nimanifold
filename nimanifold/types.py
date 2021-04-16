@@ -27,6 +27,7 @@ from typing import *
 
 from copy import copy
 
+import h5py
 from matplotlib.axes import Axes
 import numpy as np
 import pandas as pd
@@ -96,3 +97,25 @@ class Sample:
             self.contrasts[idxs] if self.contrasts is not None else None,
         )
         return sample
+
+    def to_hdf5(self, filename: str):
+        with h5py.File(filename, "w") as f:
+            f.create_dataset('data', data=self.data)
+            f.create_dataset('locs', data=self.locs)
+            f.create_dataset('pids', data=self.pids)
+            f.create_dataset('slices', data=self.slices)
+            if self.sites is not None:
+                f.create_dataset('sites', data=self.sites)
+            if self.contrasts is not None:
+                f.create_dataset('contrasts', data=self.contrasts)
+
+    @classmethod
+    def from_hdf5(cls, filename: str):
+        with h5py.File(filename, "r") as f:
+            data = np.asarray(f['data'])
+            locs = np.asarray(f['locs'])
+            pids = np.asarray(f['pids'])
+            slices = np.asarray(f['slices'])
+            sites = np.asarray(f['sites']) if 'sites' in f else None
+            contrasts = np.asarray(f['contrasts']) if 'contrasts' in f else None
+        return cls(data, locs, pids, slices, sites, contrasts)

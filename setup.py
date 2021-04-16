@@ -14,6 +14,7 @@ requirements = [
     'bokeh',
     'colorcet',
     'datashader',
+    'h5py',
     'holoviews',
     'matplotlib',
     'nibabel',
@@ -24,6 +25,7 @@ requirements = [
     'scikit-image',
     'scikit-learn',
     'seaborn',
+    'tqdm',
     'umap-learn'
 ]
 

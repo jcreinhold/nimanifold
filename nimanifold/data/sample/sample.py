@@ -17,12 +17,12 @@ __all__ = [
 
 from typing import *
 
-from dataclasses import dataclass
 from functools import partial
 
 import nibabel as nib
 import numpy as np
 from sklearn import preprocessing
+from tqdm import tqdm
 
 from nimanifold.types import *
 from nimanifold.data.csv import *
@@ -46,7 +46,8 @@ def get_samples(csv: DataFrame,
                 n_samples: Optional[int] = None,
                 threshold: Optional[float] = None,
                 to_sphere: bool = False,
-                random: bool = False) -> Sample:
+                random: bool = False,
+                progress: bool = True) -> Sample:
     patient_id_map = get_patient_id_map(csv)
     site_map = get_site_map(csv)
     contrast_map = get_contrast_map(csv)
@@ -66,7 +67,10 @@ def get_samples(csv: DataFrame,
         partial(_step_data_locs_slices, **sample_kwargs)
     data, locs, pids, slices, sites, contrasts = [], [], [], [], [], []
     grids = {}
-    for i, (_, row) in enumerate(csv.iterrows()):
+    rows = enumerate(csv.iterrows())
+    if progress:
+        rows = tqdm(rows)
+    for i, (_, row) in rows:
         fn = row.filename
         pid = row.id
         img = nib.load(fn).get_fdata()
