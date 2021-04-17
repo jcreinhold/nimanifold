@@ -40,7 +40,8 @@ def plot(samples: Sample,
          colors: Optional[str] = None,
          ax: Axes = None,
          title: str = None,
-         scale: bool = True) -> None:
+         scale: bool = True,
+         eps: float = 4e-3) -> None:
     if colors is not None:
         colors = _get_color(samples, colors)
     data = samples.data
@@ -54,7 +55,7 @@ def plot(samples: Sample,
     ax.xaxis.set_tick_params(**TICK_PARAMS)
     ax.yaxis.set_tick_params(**TICK_PARAMS)
     if samples.slices is not None:
-        scatter_imgs(data, samples.slices, ax)
+        scatter_imgs(data, samples.slices, ax, eps)
     if title is not None:
         plt.title(title)
 
